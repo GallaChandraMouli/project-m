@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nexuscompute-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./nexuscompute.db
+      - SECRET_KEY=nexus-production-secret-key-replace
+      - PLATFORM_FEE_PERCENT=0.10
+      - INITIAL_FAUCET_CREDITS=25.00
+    volumes:
+      - ./backend/nexuscompute.db:/app/nexuscompute.db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nexuscompute-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
